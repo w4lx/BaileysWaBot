@@ -19,6 +19,7 @@ async function connectToWhatsApp() {
   const { version } = await fetchLatestBaileysVersion();
   // Crea un socket de WhatsApp con la autenticación y opción para mostrar el código QR en la terminal
   const socket = makeWASocket({
+    printQRInTerminal: true,
     version,
     auth: state,
   });
