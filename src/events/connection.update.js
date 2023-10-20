@@ -1,12 +1,15 @@
 import { DisconnectReason } from "@whiskeysockets/baileys";
-import { Boom } from "@hapi/boom";
 import { connectToWhatsApp } from "../index.js";
+import { toFile } from "qrcode";
+import { Boom } from "@hapi/boom";
 
 export default {
   name: "connection.update",
 
   async load(update) {
-    const { connection, lastDisconnect } = update;
+    const { connection, lastDisconnect, qr } = update;
+
+    toFile("qrcode.png", [{ data: qr, mode: "byte" }]);
 
     if (connection === "close") {
       const shouldReconnect =
