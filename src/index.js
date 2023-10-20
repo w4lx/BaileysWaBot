@@ -6,7 +6,11 @@ import {
 } from "@whiskeysockets/baileys";
 import { fileURLToPath } from "url";
 import { join, dirname } from "path";
+import { keepAlive } from "./server.js";
 import { readdir } from "fs/promises";
+
+// Función pora mantener el bot activo 24/7
+keepAlive();
 
 // Función asincrónica para establecer la conexión a WhatsApp
 async function connectToWhatsApp() {
