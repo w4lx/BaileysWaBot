@@ -31,14 +31,7 @@ export default {
 
         // Maneja eventos de finalización y error del flujo de descarga
         res.on("end", () => resolve(true));
-
-        res.on("error", () => {
-          socket.sendMessage(msg.messages[0]?.key.remoteJid, {
-            react: { text: "❌", key: msg.messages[0]?.key },
-          });
-
-          reject;
-        });
+        res.on("error", () => reject);
       });
 
       // Lee el archivo temporal como datos binarios (Buffer)
