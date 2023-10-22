@@ -3,6 +3,7 @@ import { Sticker } from "wa-sticker-formatter";
 
 export default {
   name: "sticker",
+  alias: ["pegatina", "s"],
 
   // Función principal del comando
   run: async (socket, msg, args) => {
@@ -17,6 +18,7 @@ export default {
       // Descarga el mensaje multimedia recibido como datos binarios
       const data = await downloadMediaMessage(msg.messages[0], "buffer");
 
+      if (!data) return;
       // Crea un objeto de sticker con los datos multimedia y opciones personalizadas
       const createSticker = new Sticker(data, {
         author: msg.messages[0]?.pushName, // Nombre del autor del sticker (si está disponible)

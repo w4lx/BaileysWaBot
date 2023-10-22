@@ -1,5 +1,6 @@
 export default {
   name: "help",
+  alias: ["ayuda", "h"],
 
   run: (socket, msg, args) => {
     const commands = socket.commands.map((c) => c.name).join("\n");

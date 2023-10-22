@@ -2,12 +2,19 @@ import wiki from "wikipedia";
 
 export default {
   name: "wikipedia",
+  alias: ["wiki", "w"],
 
   run: async (socket, msg, args) => {
     try {
       const article = args.join(" ");
 
-      if (!article) return;
+      if (!article) {
+        socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
+          text: `¿Que artículo deseas buscar?`,
+        });
+
+        return;
+      }
 
       wiki.setLang("es");
 

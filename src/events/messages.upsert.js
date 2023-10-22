@@ -16,7 +16,10 @@ export default {
 
     const args = content.slice(1).trim().split(" ");
     const commandName = args.shift()?.toLowerCase();
-    const command = socket.commands.find((c) => c.name === commandName);
+    const command = socket.commands.find(
+      (c) =>
+        c.name === commandName || (c.alias && c.alias.includes(commandName))
+    );
 
     if (!command) return;
 

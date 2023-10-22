@@ -6,6 +6,7 @@ import { join } from "path";
 
 export default {
   name: "play",
+  alias: ["reproduce", "p"],
 
   // Función principal del comando
   run: async (socket, msg, args) => {
