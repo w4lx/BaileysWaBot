@@ -13,7 +13,7 @@ export default {
       // Obtiene la URL proporcionada como argumento
       const name = args.join(" ");
 
-      // Verifica si se proporciona una URL
+      // Verifica si se proporciona el nombre del vídeo
       if (!name) {
         socket.sendMessage(msg.messages[0]?.key.remoteJid, {
           text: "Ingresa el nombre de la canción.",
@@ -38,6 +38,19 @@ export default {
 
         return;
       }
+
+      if (video.seconds > 1200) {
+        socket.sendMessage(msg.messages[0]?.key.remoteJid, {
+          text: "El vídeo no debe superar los 20 minutos.",
+        });
+
+        return;
+      }
+
+      socket.sendMessage(msg.messages[0]?.key.remoteJid, {
+        image: { url: video.image },
+        caption: `*${video.title}*\n\n*Autor:* ${video.author.name}\n*Duración:* ${video.timestamp}\n*Vistas:* ${video.views}`,
+      });
 
       // Descarga el audio de la URL de YouTube y guarda en el archivo temporal
       await new Promise((resolve, reject) => {
