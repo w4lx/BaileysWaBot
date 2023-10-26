@@ -10,10 +10,4 @@ export function keepAlive() {
   app.listen(3000, () => {
     console.log("Ready!");
   });
-
-  connectToServer();
-}
-
-function connectToServer() {
-  keepAlive();
 }
