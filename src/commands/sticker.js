@@ -4,17 +4,17 @@ import { Sticker } from "wa-sticker-formatter";
 export default {
   name: "sticker",
   alias: ["pegatina", "s"],
+  cooldown: 10000,
 
   // Función principal del comando
   run: async (socket, msg, args) => {
     if (!msg.messages[0].message) return;
 
-    // Mandamos el mensaje de espera
-    const message = await socket.sendMessage(msg.messages[0]?.key.remoteJid, {
-      text: "Generando el sticker...",
-    });
-
     try {
+      socket.sendMessage(msg.messages[0]?.key.remoteJid, {
+        react: { text: "⏳", key: msg.messages[0]?.key },
+      });
+
       // Descarga el mensaje multimedia recibido como datos binarios
       const data = await downloadMediaMessage(msg.messages[0], "buffer");
 
@@ -34,16 +34,14 @@ export default {
       await socket.sendMessage(msg.messages[0]?.key.remoteJid, sticker);
 
       // Editamos el mensaje de espera
-      socket.sendMessage(message?.key.remoteJid, {
-        text: "Listo.",
-        edit: message?.key,
+      socket.sendMessage(msg.messages[0]?.key.remoteJid, {
+        react: { text: "✅", key: msg.messages[0]?.key },
       });
     } catch (error) {
       console.error(error?.stack || error);
 
-      socket.sendMessage(message?.key.remoteJid, {
-        text: "Sucedió un error al generar el sticker, inténtalo de nuevo.",
-        edit: message?.key,
+      socket.sendMessage(msg.messages[0]?.key.remoteJid, {
+        react: { text: "❌", key: msg.messages[0]?.key },
       });
     }
   },

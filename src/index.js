@@ -1,13 +1,10 @@
 // Importa las dependencias necesarias
-import {
-  makeWASocket,
-  useMultiFileAuthState,
-  fetchLatestBaileysVersion,
-} from "@whiskeysockets/baileys";
+import { makeWASocket, useMultiFileAuthState } from "@whiskeysockets/baileys";
 import { fileURLToPath } from "url";
 import { join, dirname } from "path";
 import { keepAlive } from "./server.js";
 import { readdir } from "fs/promises";
+import "my-functions";
 
 // Función pora mantener el bot activo 24/7
 keepAlive();
@@ -20,11 +17,9 @@ async function connectToWhatsApp() {
   // Obtiene el estado de la autenticación y la función para guardar las credenciales
   const { state, saveCreds } = await useMultiFileAuthState("BaileysWa");
 
-  const { version } = await fetchLatestBaileysVersion();
   // Crea un socket de WhatsApp con la autenticación y opción para mostrar el código QR en la terminal
   const socket = makeWASocket({
     printQRInTerminal: true,
-    version,
     auth: state,
   });
 

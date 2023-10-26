@@ -23,6 +23,14 @@ export default {
 
     if (!command) return;
 
-    command.run(socket, msg, args);
+    try {
+      command.run(socket, msg, args);
+    } catch (error) {
+      console.error(error);
+
+      socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
+        text: "¡Ups! Algo salió mal, inténtalo de nuevo.",
+      });
+    }
   },
 };

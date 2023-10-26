@@ -11,10 +11,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@distube/ytdl-core": "^4.13.2",
     "@hapi/boom": "^10.0.1",
     "@whiskeysockets/baileys": "^6.5.0",
+    "axios": "^1.5.1",
     "express": "^4.18.2",
+    "my-functions": "github:W4LX/my-functions",
     "qrcode": "^1.5.3",
     "qrcode-terminal": "^0.12.0",
     "wa-sticker-formatter": "^4.4.4",
