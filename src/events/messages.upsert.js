@@ -10,7 +10,8 @@ export default {
       msg.messages[0]?.message?.ephemeralMessage?.message?.extendedTextMessage
         ?.text ||
       msg.messages[0]?.message?.conversation ||
-      msg.messages[0]?.message?.imageMessage?.caption;
+      msg.messages[0]?.message?.imageMessage?.caption ||
+      msg.messages[0]?.message?.videoMessage?.caption;
 
     if (!content?.startsWith("!")) return;
 
