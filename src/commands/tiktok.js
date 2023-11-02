@@ -31,7 +31,7 @@ export default {
         react: { text: "⏳", key: msg.messages[0]?.key },
       });
 
-      const { status, result } = await TiktokDL(url, { version: "v1" });
+      const { status, result } = await TiktokDL(url, { version: "v2" });
 
       if (status !== "success") {
         socket.sendMessage(msg.messages[0]?.key.remoteJid, {
@@ -43,8 +43,8 @@ export default {
 
       await new Promise(async (resolve, reject) => {
         if (result.type === "image") {
-          result.images.forEach(async (img) => {
-            await socket.sendMessage(msg.messages[0]?.key.remoteJid, {
+          result.images.map((img) => {
+            socket.sendMessage(msg.messages[0]?.key.remoteJid, {
               image: { url: img },
             });
           });
@@ -52,7 +52,7 @@ export default {
           resolve(true);
         } else if (result.type === "video") {
           await socket.sendMessage(msg.messages[0]?.key.remoteJid, {
-            video: { url: result.video[0] },
+            video: { url: result.video },
           });
 
           resolve(true);
@@ -64,10 +64,6 @@ export default {
       });
     } catch (error) {
       console.log(error);
-
-      socket.sendMessage(msg.messages[0]?.key.remoteJid, {
-        react: { text: "❌", key: msg.messages[0]?.key },
-      });
 
       socket.sendMessage(msg.messages[0]?.key.remoteJid, {
         text: "Sucedió un error inesperado.",
