@@ -48,7 +48,7 @@ export default {
       });
 
       await socket.sendMessage(msg.messages[0]?.key.remoteJid, {
-        audio: { url: `https://aimtubemp3.onrender.com/vid/${video.videoId}` }, // Convierte los datos binarios a base64
+        audio: { url: `https://aimtubemp3.onrender.com/vid/${video.videoId}` },
         mimetype: "audio/mp4",
       });
 

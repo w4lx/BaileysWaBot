@@ -6,7 +6,7 @@ export default {
     const commands = socket.commands.map((c) => c.name).join("\n");
 
     socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
-      text: `*Mis comandos:*\n\n${commands}`,
+      text: `*Mis comandos [${socket.commands.length}]:*\n\n${commands}`,
     });
   },
 };

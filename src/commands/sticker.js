@@ -1,5 +1,5 @@
 import { downloadMediaMessage } from "@whiskeysockets/baileys";
-import { Sticker } from "wa-sticker-formatter";
+import { Sticker, createSticker } from "wa-sticker-formatter";
 
 export default {
   name: "sticker",
@@ -11,6 +11,10 @@ export default {
     if (!msg.messages[0].message) return;
 
     try {
+      const type = Object.keys(msg.messages[0].message)[0];
+
+      if (type !== "imageMessage" && type !== "videoMessage") return;
+
       socket.sendMessage(msg.messages[0]?.key.remoteJid, {
         react: { text: "⏳", key: msg.messages[0]?.key },
       });
