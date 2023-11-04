@@ -1,10 +1,13 @@
 // Importa las dependencias necesarias
+import Ffmpeg from "fluent-ffmpeg";
 import { makeWASocket, useMultiFileAuthState } from "@whiskeysockets/baileys";
 import { fileURLToPath } from "url";
 import { join, dirname } from "path";
 import { keepAlive } from "./server.js";
 import { readdir } from "fs/promises";
+import { path } from "@ffmpeg-installer/ffmpeg";
 
+Ffmpeg.setFfmpegPath(path);
 // Función pora mantener el bot activo 24/7
 keepAlive();
 

@@ -1,6 +1,5 @@
 import Ffmpeg from "fluent-ffmpeg";
 import { downloadMediaMessage } from "@whiskeysockets/baileys";
-import { path } from "@ffmpeg-installer/ffmpeg";
 import { tmpdir } from "os";
 import { readFile, unlink } from "fs/promises";
 import { join } from "path";
@@ -19,8 +18,6 @@ export default {
       const type = Object.keys(msg.messages[0].message)[0];
 
       if (type !== "imageMessage" && type !== "videoMessage") return;
-
-      Ffmpeg.setFfmpegPath(path);
 
       socket.sendMessage(msg.messages[0]?.key.remoteJid, {
         react: { text: "⏳", key: msg.messages[0]?.key },
