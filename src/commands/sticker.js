@@ -8,7 +8,6 @@ import { Readable } from "stream";
 export default {
   name: "sticker",
   alias: ["pegatina", "s"],
-  cooldown: 10000,
 
   // Función principal del comando
   run: async (socket, msg, args) => {

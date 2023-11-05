@@ -31,7 +31,7 @@ export default {
         react: { text: "⏳", key: msg.messages[0]?.key },
       });
 
-      const { status, result } = await TiktokDL(url, { version: "v2" });
+      const { status, result } = await TiktokDL(url, { version: "v3" });
 
       if (status !== "success") {
         socket.sendMessage(msg.messages[0]?.key.remoteJid, {
@@ -52,7 +52,7 @@ export default {
           resolve(true);
         } else if (result.type === "video") {
           await socket.sendMessage(msg.messages[0]?.key.remoteJid, {
-            video: { url: result.video },
+            video: { url: result.video2 },
           });
 
           resolve(true);
