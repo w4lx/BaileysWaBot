@@ -66,8 +66,23 @@ export default {
 
       const media = await mediaFromUrl(result.url);
 
+      if (media?.size > 99999966.82) {
+        await socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
+          text: "No pude enviar el video ya que este supera el limite del peso permitido.",
+        });
+
+        media.data = null;
+
+        socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
+          react: { text: "❌", key: msg.messages[0]?.key },
+        });
+
+        return;
+      }
+
       await socket.sendMessage(msg.messages[0].key.remoteJid, {
         video: media.data,
+        mimetype: "video/mp4",
       });
 
       media.data = null;

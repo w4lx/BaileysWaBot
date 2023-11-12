@@ -13,7 +13,6 @@ export default {
         socket.sendMessage(msg.messages[0]?.key.remoteJid, {
           text: "Ingrese la URl del vídeo de TikTok que deseas descargar.",
         });
-
         return;
       }
 
@@ -24,7 +23,6 @@ export default {
         socket.sendMessage(msg.messages[0]?.key.remoteJid, {
           text: "URL inválida.",
         });
-
         return;
       }
 
@@ -38,7 +36,6 @@ export default {
         socket.sendMessage(msg.messages[0]?.key.remoteJid, {
           text: "Ha ocurrido un error, vuelve a intentarlo.",
         });
-
         return;
       }
 
@@ -54,8 +51,22 @@ export default {
         } else if (result.type === "video") {
           const media = await mediaFromUrl(result.video2);
 
+          if (media?.size > 99999966.82) {
+            await socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
+              text: "No pude enviar el video ya que este supera el limite del peso permitido.",
+            });
+
+            media.data = null;
+
+            socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
+              react: { text: "❌", key: msg.messages[0]?.key },
+            });
+            return;
+          }
+
           await socket.sendMessage(msg.messages[0]?.key.remoteJid, {
-            video: media,
+            video: media.data,
+            mimetype: "video/mp4",
           });
 
           media.data = null;

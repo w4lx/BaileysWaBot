@@ -3,8 +3,6 @@ import yts from "yt-search"; // Biblioteca para realizar búsquedas en YouTube
 import ytdl from "@distube/ytdl-core"; // Biblioteca para descargar audio de YouTube
 import path from "path"; // Biblioteca para manejar rutas de archivos y directorios
 import fs from "fs"; // Biblioteca para operaciones de sistema de archivos
-import os from "os"; // Biblioteca para obtener información del sistema operativo
-
 // Exportando un objeto que contiene la lógica del comando "play"
 export default {
   // Nombre del comando y sus alias
@@ -28,7 +26,7 @@ export default {
       }
 
       // Crea una ruta para el archivo de audio en el directorio temporal del sistema
-      const dir = path.join(os.tmpdir(), `${Date.now()}.webm`);
+      const dir = path.resolve("src", "temp", `${Date.now()}.webm`);
 
       // Envia un mensaje de espera al usuario
       socket.sendMessage(msg.messages[0]?.key.remoteJid, {
@@ -81,10 +79,8 @@ export default {
           .on("finish", () => resolve(true)); // Resuelve la promesa cuando la descarga finaliza
       });
 
-      // Lee el archivo de audio como un búfer y lo envía como mensaje de audio al usuario
-      const song = await fs.promises.readFile(dir);
       await socket.sendMessage(msg.messages[0]?.key.remoteJid, {
-        audio: Buffer.from(song, "base64"), // Contenido del audio en formato base64
+        audio: { url: dir }, // Contenido del audio en formato base64
         mimetype: "audio/mp4", // Tipo de archivo de audio
       });
 

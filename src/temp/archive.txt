@@ -1,0 +1,7 @@
+/ ------------------------------------------- \
+Este archivo tiene el propósito de permitir
+la subida de la carpeta 'temp' al repositorio.
+Si la carpeta está vacía, no se realizará
+la subida, lo que podría resultar errores
+en el comando play y sticker. 
+/ ------------------------------------------- \

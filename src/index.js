@@ -39,14 +39,3 @@ connectToWhatsApp().catch((err) => console.error(err));
 
 // Exporta la función para conectar a WhatsApp para su uso en otros módulos
 export { connectToWhatsApp };
-
-// Para que el bot no se apague
-process.on("uncaughtException", (error) => console.error(error));
-
-process.on("uncaughtExceptionMonitor", (error) => console.error(error));
-
-process.on("unhandledRejection", (error) => console.error(error));
-
-process.stdin.resume();
-
-/* Code By: Walter */

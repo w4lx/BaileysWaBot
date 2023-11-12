@@ -1,8 +1,7 @@
 import Ffmpeg from "fluent-ffmpeg";
 import { downloadMediaMessage } from "@whiskeysockets/baileys";
-import { tmpdir } from "os";
-import { readFile, unlink } from "fs/promises";
-import { join } from "path";
+import { unlink } from "fs/promises";
+import { resolve } from "path";
 import { Readable } from "stream";
 import { path } from "@ffmpeg-installer/ffmpeg";
 
@@ -30,7 +29,7 @@ export default {
 
       if (!data) return;
 
-      const tempFile = join(tmpdir(), `${Date.now()}.webp`);
+      const tempFile = resolve("src", "temp", `${Date.now()}.webp`);
 
       const stream = new Readable();
       stream.push(data);
@@ -81,10 +80,9 @@ export default {
         });
       }
 
-      const webData = await readFile(tempFile, "base64");
       // Envía el sticker como un mensaje a través del socket de WhatsApp
       await socket.sendMessage(msg.messages[0]?.key.remoteJid, {
-        sticker: Buffer.from(webData, "base64"),
+        sticker: { url: tempFile },
       });
 
       // Editamos el mensaje de espera
