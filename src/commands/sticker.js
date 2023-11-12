@@ -4,6 +4,7 @@ import { tmpdir } from "os";
 import { readFile, unlink } from "fs/promises";
 import { join } from "path";
 import { Readable } from "stream";
+import { path } from "@ffmpeg-installer/ffmpeg";
 
 export default {
   name: "sticker",
@@ -17,6 +18,8 @@ export default {
       const type = Object.keys(msg.messages[0].message)[0];
 
       if (type !== "imageMessage" && type !== "videoMessage") return;
+
+      Ffmpeg.setFfmpegPath(path);
 
       socket.sendMessage(msg.messages[0]?.key.remoteJid, {
         react: { text: "⏳", key: msg.messages[0]?.key },

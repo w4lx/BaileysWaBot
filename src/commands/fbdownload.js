@@ -1,3 +1,4 @@
+import { mediaFromUrl } from "../functions/mediaFromUrl.js";
 import facebook from "@xaviabot/fb-downloader";
 
 export default {
@@ -15,25 +16,28 @@ export default {
         return;
       }
 
-      const regexp = /^(https?:\/\/)?(www\.)?facebook.com\/[a-zA-Z0-9(\.\?)?]/;
-
-      if (!regexp) {
-        socket.sendMessage(msg.messages[0].key.remoteJid, {
-          text: "Asegurate de que sea una URL de facebook válida.",
-        });
-        return;
-      }
-
       socket.sendMessage(msg.messages[0]?.key.remoteJid, {
         react: { text: "⏳", key: msg.messages[0]?.key },
       });
 
       const { hd, sd } = await facebook(url);
 
-      const video = hd ? { url: hd } : { url: sd };
+      const video = await mediaFromUrl(hd || sd);
+
+      if (video?.size > 99999966.82) {
+        await socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
+          text: "No pude enviar el video ya que este supera el limite del peso permitido.",
+        });
+
+        socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
+          react: { text: "❌", key: msg.messages[0]?.key },
+        });
+
+        return;
+      }
 
       await socket.sendMessage(msg.messages[0]?.key.remoteJid, {
-        video: video,
+        video: video.data,
       });
 
       socket.sendMessage(msg.messages[0]?.key.remoteJid, {
@@ -42,27 +46,25 @@ export default {
     } catch (error) {
       console.error(error);
 
-      if (error?.includes("Unable to fetch video information")) {
-        await socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
-          react: { text: "❌", key: msg.messages[0]?.key },
+      if (error?.includes("Please enter the valid Facebook URL")) {
+        await socket.sendMessage(msg.messages[0].key.remoteJid, {
+          text: "Asegurate de que sea una URL de facebook válida.",
         });
 
         socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
-          text: "El video no existe o es privado.",
+          react: { text: "❌", key: msg.messages[0]?.key },
         });
-
         return;
       }
 
-      if (error?.message?.includes("no space left on device")) {
+      if (error?.includes("Unable to fetch video information")) {
         await socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
-          react: { text: "❌", key: msg.messages[0]?.key },
+          text: "El video no existe o es privado.",
         });
 
         socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
-          text: "No pude enviar el video ya que este supera el limite del peso permitido.",
+          react: { text: "❌", key: msg.messages[0]?.key },
         });
-
         return;
       }
 

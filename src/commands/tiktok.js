@@ -1,4 +1,5 @@
 import { TiktokDL } from "@tobyg74/tiktok-api-dl";
+import { mediaFromUrl } from "../functions/mediaFromUrl.js";
 
 export default {
   name: "tiktok",
@@ -51,9 +52,13 @@ export default {
 
           resolve(true);
         } else if (result.type === "video") {
+          const media = await mediaFromUrl(result.video2);
+
           await socket.sendMessage(msg.messages[0]?.key.remoteJid, {
-            video: { url: result.video2 },
+            video: media,
           });
+
+          media.data = null;
 
           resolve(true);
         }

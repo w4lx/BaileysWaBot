@@ -1,3 +1,4 @@
+import { mediaFromUrl } from "../functions/mediaFromUrl.js";
 import ytSearch from "yt-search";
 import youtubedl from "youtube-dl-exec";
 
@@ -63,9 +64,13 @@ export default {
         return;
       }
 
+      const media = await mediaFromUrl(result.url);
+
       await socket.sendMessage(msg.messages[0].key.remoteJid, {
-        video: { url: result.url },
+        video: media.data,
       });
+
+      media.data = null;
 
       socket.sendMessage(msg.messages[0]?.key.remoteJid, {
         react: { text: "✅", key: msg.messages[0]?.key },
