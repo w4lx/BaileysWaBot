@@ -1,5 +1,9 @@
 import { URL } from "url";
-
+/**
+ *
+ * @param { string } url
+ * @returns { Promise<{ data: Buffer, mimetype: string | null, size: number }> }ad
+ */
 export async function mediaFromUrl(url) {
   if (!url) return;
 
@@ -10,11 +14,15 @@ export async function mediaFromUrl(url) {
   });
 
   const response = await fetch(pUrl, reqOptions);
+  const size = parseInt(response.headers.get("Content-Length"));
+
+  if (size > 99999966.82) return "limit exceeded";
+
   const arrayBuffer = await response.arrayBuffer();
 
   return {
     data: Buffer.from(arrayBuffer, "base64"),
     mimetype: response.headers.get("Content-Type"),
-    size: arrayBuffer.byteLength,
+    size,
   };
 }

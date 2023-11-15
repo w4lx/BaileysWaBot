@@ -24,7 +24,7 @@ export default {
 
       const video = await mediaFromUrl(hd || sd);
 
-      if (video?.size > 99999966.82) {
+      if (video === "limit exceeded") {
         await socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
           text: "No pude enviar el video ya que este supera el limite del peso permitido.",
         });
