@@ -1,8 +1,9 @@
 // Importando las bibliotecas necesarias
 import yts from "yt-search"; // Biblioteca para realizar búsquedas en YouTube
-import ytdl from "@distube/ytdl-core"; // Biblioteca para descargar audio de YouTube
 import path from "path"; // Biblioteca para manejar rutas de archivos y directorios
 import fs from "fs"; // Biblioteca para operaciones de sistema de archivos
+import youtubeDl from "youtube-dl-exec";
+
 // Exportando un objeto que contiene la lógica del comando "play"
 export default {
   // Nombre del comando y sus alias
@@ -26,7 +27,7 @@ export default {
       }
 
       // Crea una ruta para el archivo de audio en el directorio temporal del sistema
-      const dir = path.resolve("src", "temp", `${Date.now()}.webm`);
+      const dir = path.resolve("src", "temp", `${Date.now()}.`);
 
       // Envia un mensaje de espera al usuario
       socket.sendMessage(msg.messages[0]?.key.remoteJid, {
@@ -72,15 +73,13 @@ export default {
         caption: `*${video.title}*\n\n*Autor:* ${video.author.name}\n*Duración:* ${video.timestamp}\n*Vistas:* ${video.views}`, // Información del video formateada
       });
 
-      // Descarga el audio del video y guarda el archivo en el directorio temporal
-      await new Promise((resolve, reject) => {
-        ytdl(video.url, { filter: "audioonly" }) // Descarga solo el audio del video
-          .pipe(fs.createWriteStream(dir)) // Crea un flujo de escritura en el archivo
-          .on("finish", () => resolve(true)); // Resuelve la promesa cuando la descarga finaliza
+      await youtubeDl(video.url, {
+        extractAudio: true,
+        output: dir + "%(ext)s",
       });
 
       await socket.sendMessage(msg.messages[0]?.key.remoteJid, {
-        audio: { url: dir }, // Contenido del audio en formato base64
+        audio: { url: dir + "webm" }, // Contenido del audio en formato base64
         mimetype: "audio/mp4", // Tipo de archivo de audio
       });
 
@@ -90,7 +89,7 @@ export default {
       });
 
       // Elimina el archivo de audio del directorio temporal después de enviarlo
-      fs.promises.unlink(dir);
+      fs.promises.unlink(dir + "webm");
     } catch (error) {
       // Manejo de errores: imprime el error en la consola y envía un mensaje de error al usuario
       console.error(error);
