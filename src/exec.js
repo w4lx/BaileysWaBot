@@ -1,6 +1,6 @@
 import { exec } from "child_process";
 
-export default function () {
+export function installDependencies() {
   exec("npm install", (error, stdout, stderr) => {
     if (error) {
       console.error(`Error al ejecutar npm install: ${error.message}`);
@@ -14,12 +14,4 @@ export default function () {
 
     console.log(`Instalación exitosa. Salida: ${stdout}`);
   });
-
-  process.on("uncaughtException", (error) => console.error(error));
-
-  process.on("uncaughtExceptionMonitor", (error) => console.error(error));
-
-  process.on("unhandledRejection", (error) => console.error(error));
-
-  process.stdin.resume();
 }

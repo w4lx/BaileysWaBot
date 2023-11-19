@@ -2,8 +2,11 @@
 import { makeWASocket, useMultiFileAuthState } from "@whiskeysockets/baileys";
 import { fileURLToPath } from "url";
 import { join, dirname } from "path";
-import { keepAlive } from "./server.js";
 import { readdir } from "fs/promises";
+import { installDependencies } from "./exec.js";
+import { keepAlive } from "./server.js";
+
+await Promise.all([installDependencies()]);
 
 // Función pora mantener el bot activo 24/7
 keepAlive();
