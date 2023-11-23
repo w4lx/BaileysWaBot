@@ -6,7 +6,7 @@ export default {
   name: "connection.update",
 
   async load(update) {
-    const { connection, lastDisconnect } = update;;
+    const { connection, lastDisconnect } = update;
 
     if (connection === "close") {
       const shouldReconnect =
