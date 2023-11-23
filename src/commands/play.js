@@ -1,12 +1,12 @@
 // Importando las bibliotecas necesarias
-import yts from "yt-search"; // Biblioteca para realizar búsquedas en YouTube
-import path from "path"; // Biblioteca para manejar rutas de archivos y directorios
 import fs from "fs"; // Biblioteca para operaciones de sistema de archivos
+import path from "path"; // Biblioteca para manejar rutas de archivos y directorios
+import yts from "yt-search"; // Biblioteca para realizar búsquedas en YouTube
 import youtubeDl from "youtube-dl-exec";
+import ffmpeg from "@ffmpeg-installer/ffmpeg";
 
 // Exportando un objeto que contiene la lógica del comando "play"
 export default {
-  // Nombre del comando y sus alias
   name: "play",
   alias: ["reproduce", "p"],
 
@@ -27,7 +27,7 @@ export default {
       }
 
       // Crea una ruta para el archivo de audio en el directorio temporal del sistema
-      const dir = path.resolve("src", "temp", `${Date.now()}.`);
+      const dir = path.resolve("src", "temp", `SONG_${Date.now()}.`);
 
       // Envia un mensaje de espera al usuario
       socket.sendMessage(msg.messages[0]?.key.remoteJid, {
@@ -74,12 +74,13 @@ export default {
       });
 
       await youtubeDl(video.url, {
-        extractAudio: true,
+        ffmpegLocation: ffmpeg.path,
         output: dir + "%(ext)s",
+        extractAudio: true,
       });
 
       await socket.sendMessage(msg.messages[0]?.key.remoteJid, {
-        audio: { url: dir + "webm" }, // Contenido del audio en formato base64
+        audio: { url: dir + "webm" }, // Contenido del audio
         mimetype: "audio/mp4", // Tipo de archivo de audio
       });
 
