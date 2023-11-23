@@ -75,12 +75,13 @@ export default {
 
       await youtubeDl(video.url, {
         ffmpegLocation: ffmpeg.path,
-        output: dir + "%(ext)s",
         extractAudio: true,
+        addMetadata: true,
+        output: dir + "%(ext)s",
       });
 
       await socket.sendMessage(msg.messages[0]?.key.remoteJid, {
-        audio: { url: dir + "webm" }, // Contenido del audio
+        audio: { url: dir + "opus" }, // Contenido del audio
         mimetype: "audio/mp4", // Tipo de archivo de audio
       });
 
@@ -90,7 +91,7 @@ export default {
       });
 
       // Elimina el archivo de audio del directorio temporal después de enviarlo
-      fs.promises.unlink(dir + "webm");
+      fs.promises.unlink(dir + "opus");
     } catch (error) {
       // Manejo de errores: imprime el error en la consola y envía un mensaje de error al usuario
       console.error(error);
