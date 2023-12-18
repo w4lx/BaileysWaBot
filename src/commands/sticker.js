@@ -1,8 +1,8 @@
 import Ffmpeg from "fluent-ffmpeg";
 import { downloadMediaMessage } from "@whiskeysockets/baileys";
-import { unlink } from "fs/promises";
-import { resolve } from "path";
-import { Readable } from "stream";
+import { unlink } from "node:fs/promises";
+import { resolve } from "node:path";
+import { Readable } from "node:stream";
 import { path } from "@ffmpeg-installer/ffmpeg";
 
 export default {

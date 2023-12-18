@@ -1,19 +1,19 @@
 // Importa las dependencias necesarias
 import { makeWASocket, useMultiFileAuthState } from "@whiskeysockets/baileys";
-import { fileURLToPath } from "url";
-import { join, dirname } from "path";
+import { createInterface } from "node:readline";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import { readdir } from "node:fs/promises";
 import { keepAlive } from "./server.js";
-import { readdir } from "fs/promises";
+import NodeCache from "node-cache";
 import pino from "pino";
 import clc from "cli-color";
-import NodeCache from "node-cache";
-import readline from "readline";
 
 // Cache para almacenar información relacionada con los mensajes y reintento
 const msgRetryCounterCache = new NodeCache();
 
 // Interfaz de línea de comandos para la entrada/salida estándar
-const rl = readline.createInterface({
+const rl = createInterface({
   input: process.stdin,
   output: process.stdout,
 });
@@ -48,8 +48,11 @@ async function connectToWhatsApp() {
         "595994966449"
       )}\n/> `
     );
+
     const code = await socket.requestPairingCode(phoneNumber);
+
     console.log(`Tu codigo de conexión es: ${clc.bold(code)}\n`);
+
     console.log(
       `Abre tu WhatsApp, ve a ${clc.bold(
         "Dispositivos vinculados >  vincular un dispositivo > vincular usando el numero de teléfono."

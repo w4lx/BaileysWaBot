@@ -1,5 +1,5 @@
-import { readdir } from "fs/promises";
-import { resolve } from "path";
+import { readdir } from "node:fs/promises";
+import { resolve } from "node:path";
 
 // Esta función recibe un objeto socket como parámetro
 export default async function (socket) {
