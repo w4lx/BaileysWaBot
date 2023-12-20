@@ -27,7 +27,7 @@ export default {
       }
 
       // Crea una ruta para el archivo de audio en el directorio temporal del sistema
-      const dir = path.resolve("src", "temp", `SONG_${Date.now()}.`);
+      const dir = path.resolve("src", "temp", `SONG${Date.now()}.mp3`);
 
       // Envia un mensaje de espera al usuario
       socket.sendMessage(msg.messages[0]?.key.remoteJid, {
@@ -77,12 +77,13 @@ export default {
         ffmpegLocation: ffmpeg.path,
         extractAudio: true,
         addMetadata: true,
-        output: dir + "%(ext)s",
+        audioFormat: "mp3",
+        output: dir,
       });
 
       await socket.sendMessage(msg.messages[0]?.key.remoteJid, {
-        audio: { url: dir + "opus" }, // Contenido del audio
-        mimetype: "audio/mp4", // Tipo de archivo de audio
+        audio: { url: dir }, // Contenido del audio
+        mimetype: "audio/mp4", // Tipo de archivo
       });
 
       // Envia una reacción de éxito al usuario
@@ -91,7 +92,7 @@ export default {
       });
 
       // Elimina el archivo de audio del directorio temporal después de enviarlo
-      fs.promises.unlink(dir + "opus");
+      fs.promises.unlink(dir);
     } catch (error) {
       // Manejo de errores: imprime el error en la consola y envía un mensaje de error al usuario
       console.error(error);

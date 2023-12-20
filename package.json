@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@distube/ytpl": "^1.2.1",
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@hapi/boom": "^10.0.1",
     "@tobyg74/tiktok-api-dl": "^1.0.10",
@@ -26,7 +27,7 @@
     "qrcode": "^1.5.3",
     "simple-tts-mp3": "^1.1.0",
     "wikipedia": "^2.1.1",
-    "youtube-dl-exec": "^2.4.17",
+    "youtube-dl-exec": "^2.5.3",
     "yt-search": "^2.10.4"
   }
 }
