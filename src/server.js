@@ -3,7 +3,7 @@ import express from "express";
 export function keepAlive() {
   const app = express();
 
-  app.all("/", (req, res) => {
+  app.get("/", (req, res) => {
     res.send("Bot en funcionamiento. ");
   });
 

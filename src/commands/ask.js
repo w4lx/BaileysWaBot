@@ -6,14 +6,14 @@ export default {
 
   run: async (socket, msg, args) => {
     try {
-      if (!args.join(" ")) return;
+      const content = args.join(" ") || "Hola";
 
       socket.sendMessage(msg.messages[0].key.remoteJid, {
         react: { text: "📝", key: msg.messages[0]?.key },
       });
 
       const response = await new Hercai().question({
-        content: args.join(" "),
+        content,
         model: "v3-beta",
       });
 
