@@ -4,7 +4,9 @@ import youtubedl from "youtube-dl-exec";
 
 export default {
   name: "video",
+  description: "Descarga videos de Youtube.",
   alias: ["v", "vid"],
+  use: "!video 'nombre o url'",
 
   run: async (socket, msg, args) => {
     try {
@@ -40,21 +42,13 @@ export default {
         addHeader: ["referer:youtube.com", "user-agent:googlebot"],
       });
 
-      const qualitys = ["720p", "480p", "360p", "240p", "144p"];
+      const results = formats.filter((x) => {
+        return x.vcodec !== "none" && x.acodec !== "none";
+      });
 
-      let result;
-
-      for (const quality of qualitys) {
-        result = formats.find(
-          (i) => i.format_note === quality && i.acodec !== "none"
-        );
-
-        if (result) break;
-      }
-
-      if (!result) {
+      if (!results.length) {
         await socket.sendMessage(msg.messages[0].key.remoteJid, {
-          text: "Vídeo no disponible para descargar.",
+          text: "Vídeo no disponible para su descargar.",
         });
 
         socket.sendMessage(msg.messages[0]?.key.remoteJid, {
@@ -64,7 +58,7 @@ export default {
         return;
       }
 
-      const media = await mediaFromUrl(result.url);
+      const media = await mediaFromUrl(results[results.length - 1].url);
 
       if (media === "limit exceeded") {
         await socket.sendMessage(msg.messages[0]?.key?.remoteJid, {

@@ -8,7 +8,9 @@ import ffmpeg from "@ffmpeg-installer/ffmpeg";
 // Exportando un objeto que contiene la lógica del comando "play"
 export default {
   name: "play",
+  description: "Descarga canciones de Youtube.",
   alias: ["reproduce", "p"],
+  use: "!play 'nombre o url'",
 
   // Función principal del comando
   run: async (socket, msg, args) => {
@@ -27,7 +29,7 @@ export default {
       }
 
       // Crea una ruta para el archivo de audio en el directorio temporal del sistema
-      const dir = path.resolve("src", "temp", `SONG${Date.now()}.mp3`);
+      const output = path.resolve("src", "temp", `SONG${Date.now()}.m4a`);
 
       // Envia un mensaje de espera al usuario
       socket.sendMessage(msg.messages[0]?.key.remoteJid, {
@@ -67,22 +69,22 @@ export default {
         return;
       }
 
+      await youtubeDl(video.url, {
+        ffmpegLocation: ffmpeg.path,
+        format: "m4a",
+        extractAudio: true,
+        addMetadata: true,
+        output,
+      });
+
       // Envía información del video al usuario (título, autor, duración y vistas)
-      socket.sendMessage(msg.messages[0]?.key.remoteJid, {
+      await socket.sendMessage(msg.messages[0]?.key.remoteJid, {
         image: { url: video.image }, // URL de la imagen en miniatura del video
         caption: `*${video.title}*\n\n*Autor:* ${video.author.name}\n*Duración:* ${video.timestamp}\n*Vistas:* ${video.views}`, // Información del video formateada
       });
 
-      await youtubeDl(video.url, {
-        ffmpegLocation: ffmpeg.path,
-        extractAudio: true,
-        addMetadata: true,
-        audioFormat: "mp3",
-        output: dir,
-      });
-
       await socket.sendMessage(msg.messages[0]?.key.remoteJid, {
-        audio: { url: dir }, // Contenido del audio
+        audio: { url: output }, // Contenido del audio
         mimetype: "audio/mp4", // Tipo de archivo
       });
 
@@ -92,7 +94,7 @@ export default {
       });
 
       // Elimina el archivo de audio del directorio temporal después de enviarlo
-      fs.promises.unlink(dir);
+      fs.promises.unlink(output);
     } catch (error) {
       // Manejo de errores: imprime el error en la consola y envía un mensaje de error al usuario
       console.error(error);

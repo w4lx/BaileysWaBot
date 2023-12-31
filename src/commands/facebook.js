@@ -3,7 +3,9 @@ import facebook from "@xaviabot/fb-downloader";
 
 export default {
   name: "facebook",
+  description: "Descarga videos de facebook.",
   alias: ["fb"],
+  use: "!facebook 'url'",
 
   run: async (socket, msg, args) => {
     try {
@@ -13,6 +15,7 @@ export default {
         socket.sendMessage(msg.messages[0].key.remoteJid, {
           text: "Ingresa una URL de un video de facebook.",
         });
+
         return;
       }
 
@@ -54,6 +57,7 @@ export default {
         socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
           react: { text: "❌", key: msg.messages[0]?.key },
         });
+
         return;
       }
 
@@ -65,6 +69,7 @@ export default {
         socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
           react: { text: "❌", key: msg.messages[0]?.key },
         });
+
         return;
       }
 

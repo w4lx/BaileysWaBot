@@ -2,7 +2,9 @@ import wiki from "wikipedia";
 
 export default {
   name: "wikipedia",
+  description: "Busca en Wikipedia.",
   alias: ["wiki", "w"],
+  use: "!wikipedia 'búsqueda'",
 
   run: async (socket, msg, args) => {
     try {
@@ -18,10 +20,11 @@ export default {
 
       wiki.setLang("es");
 
-      const page = await (await wiki.page(article)).summary();
+      const { summary } = await wiki.page(article);
+      const { title, extract } = await summary();
 
       socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
-        text: `*${page.title}*\n\n${page.extract}`,
+        text: `*${title}*\n\n${extract}`,
       });
     } catch (error) {
       console.error(error);

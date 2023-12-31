@@ -3,7 +3,9 @@ import { mediaFromUrl } from "../functions/mediaFromUrl.js";
 
 export default {
   name: "tiktok",
+  description: "Descarga videos de TikTok sin marca de agua.",
   alias: ["tt"],
+  use: "!tiktok 'url'",
 
   run: async (socket, msg, args) => {
     try {
@@ -13,6 +15,7 @@ export default {
         socket.sendMessage(msg.messages[0]?.key.remoteJid, {
           text: "Ingrese la URl del vídeo de TikTok que deseas descargar.",
         });
+
         return;
       }
 
@@ -23,6 +26,7 @@ export default {
         socket.sendMessage(msg.messages[0]?.key.remoteJid, {
           text: "URL inválida.",
         });
+
         return;
       }
 
@@ -36,6 +40,7 @@ export default {
         socket.sendMessage(msg.messages[0]?.key.remoteJid, {
           text: "Ha ocurrido un error, vuelve a intentarlo.",
         });
+
         return;
       }
 

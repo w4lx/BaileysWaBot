@@ -2,7 +2,9 @@ import { getAudioBuffer } from "simple-tts-mp3";
 
 export default {
   name: "tts",
+  description: "Convierte texto a voz.",
   alias: [],
+  use: "!tts 'texto'",
 
   run: async (socket, msg, args) => {
     try {
@@ -20,10 +22,10 @@ export default {
         react: { text: "⏳", key: msg.messages[0]?.key },
       });
 
-      const audio = await getAudioBuffer(content, "es");
+      const tts = await getAudioBuffer(content, "es");
 
       await socket.sendMessage(msg.messages[0].key.remoteJid, {
-        audio,
+        audio: tts,
         mimetype: "audio/mp4",
       });
 

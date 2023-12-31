@@ -7,10 +7,6 @@ import { readdir } from "node:fs/promises";
 import { keepAlive } from "./server.js";
 import NodeCache from "node-cache";
 import pino from "pino";
-import clc from "cli-color";
-
-// Cache para almacenar información relacionada con los mensajes y reintento
-const msgRetryCounterCache = new NodeCache();
 
 // Interfaz de línea de comandos para la entrada/salida estándar
 const rl = createInterface({
@@ -35,28 +31,21 @@ async function connectToWhatsApp() {
   // Crea un socket de WhatsApp con la autenticación y opción para mostrar el código QR en la terminal
   const socket = makeWASocket({
     logger: pino({ level: "silent" }),
-    printQRInTerminal: false,
     mobile: false,
     browser: ["FireFox (linux)"],
     auth: state,
-    msgRetryCounterCache,
+    msgRetryCounterCache: new NodeCache(),
   });
 
   if (!socket.authState.creds.registered) {
-    const phoneNumber = await question(
-      `\nEscribe tú número de WhatsApp:\nEjemplo: ${clc.bold(
-        "595994966449"
-      )}\n/> `
-    );
+    const phoneNumber = await question(`Escribe tú número de WhatsApp:`);
 
     const code = await socket.requestPairingCode(phoneNumber);
 
-    console.log(`Tu codigo de conexión es: ${clc.bold(code)}\n`);
+    console.log(`Tu codigo de conexión es: ${code}`);
 
     console.log(
-      `Abre tu WhatsApp, ve a ${clc.bold(
-        "Dispositivos vinculados >  vincular un dispositivo > vincular usando el numero de teléfono."
-      )}`
+      `Abre tu WhatsApp, ve a Dispositivos vinculados >  vincular un dispositivo > vincular usando el numero de teléfono.`
     );
   }
 
@@ -73,7 +62,7 @@ async function connectToWhatsApp() {
 }
 
 // Invoca la función para conectar a WhatsApp y maneja cualquier error que ocurra
-connectToWhatsApp().catch((err) => console.error(err));
+connectToWhatsApp();
 
 // Exporta la función para conectar a WhatsApp para su uso en otros módulos
 export { connectToWhatsApp };

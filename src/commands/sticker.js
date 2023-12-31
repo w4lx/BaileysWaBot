@@ -2,12 +2,13 @@ import Ffmpeg from "fluent-ffmpeg";
 import { downloadMediaMessage } from "@whiskeysockets/baileys";
 import { unlink } from "node:fs/promises";
 import { resolve } from "node:path";
-import { Readable } from "node:stream";
 import { path } from "@ffmpeg-installer/ffmpeg";
 
 export default {
   name: "sticker",
+  description: "Genera stickers.",
   alias: ["pegatina", "s"],
+  use: "!sticket 'imagen, video o gif'",
 
   // Función principal del comando
   run: async (socket, msg, args) => {
@@ -25,21 +26,16 @@ export default {
       });
 
       // Descarga el mensaje multimedia recibido como datos binarios
-      const data = await downloadMediaMessage(msg.messages[0], "buffer");
+      const src = await downloadMediaMessage(msg.messages[0], "stream");
 
-      if (!data) return;
+      if (!src) return;
 
-      const tempFile = resolve("src", "temp", `${Date.now()}.webp`);
-
-      const stream = new Readable();
-      stream.push(data);
-      stream.push(null);
+      const output = resolve("src", "temp", `${Date.now()}.webp`);
 
       if (type === "imageMessage") {
-        await new Promise((resolve, reject) => {
+        await new Promise((resolve) => {
           Ffmpeg()
-            .input(stream)
-            .on("error", reject)
+            .input(src)
             .on("end", () => resolve(true))
             .addOutputOptions([
               "-vf",
@@ -48,13 +44,12 @@ export default {
               "1",
             ])
             .toFormat("webp")
-            .save(tempFile);
+            .save(output);
         });
       } else if (type === "videoMessage") {
-        await new Promise((resolve, reject) => {
+        await new Promise((resolve) => {
           Ffmpeg()
-            .input(stream)
-            .on("error", reject)
+            .input(src)
             .on("end", () => resolve(true))
             .addOutputOptions([
               "-vcodec",
@@ -76,13 +71,13 @@ export default {
               "512:512",
             ])
             .toFormat("webp")
-            .save(tempFile);
+            .save(output);
         });
       }
 
       // Envía el sticker como un mensaje a través del socket de WhatsApp
       await socket.sendMessage(msg.messages[0]?.key.remoteJid, {
-        sticker: { url: tempFile },
+        sticker: { url: output },
       });
 
       // Editamos el mensaje de espera
@@ -90,7 +85,7 @@ export default {
         react: { text: "✅", key: msg.messages[0]?.key },
       });
 
-      await unlink(tempFile);
+      await unlink(output);
     } catch (error) {
       console.error(error?.stack || error);
 

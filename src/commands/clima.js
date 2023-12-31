@@ -2,15 +2,20 @@ import axios from "axios";
 
 export default {
   name: "clima",
+  description: "Obtén el clima actual de tu ciudad o país.",
   alias: ["tiempo"],
+  use: "!cliema 'ciudad o país'",
 
   run: async (socket, msg, args) => {
     const city = args.join(" ");
 
-    if (!city)
-      return socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
+    if (!city) {
+      socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
         text: `*Escriba el nombre de pais o ciudad*`,
       });
+
+      return;
+    }
 
     try {
       const desc = {
@@ -43,6 +48,7 @@ export default {
       socket.sendMessage(msg.messages[0]?.key?.remoteJid, { text: wea });
     } catch (e) {
       console.error(e);
+
       socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
         text: `*No se han encontrado resultados, corrobore quw haya escrito correctamente su país o ciudad*`,
       });

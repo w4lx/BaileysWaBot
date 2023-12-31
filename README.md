@@ -10,3 +10,4 @@
 
 - [Únete a nuestro Discord](https://discord.com/invite/UfYDWzW5Ej)
 - [Sígueme en Instagram](https://www.instagram.com/walx.craxker)
+- [Sígueme en TikTok](https://www.tiktok.com/@the.walrrix)

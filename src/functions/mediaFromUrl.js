@@ -1,4 +1,7 @@
+"use strict";
+
 import { URL } from "node:url";
+
 /**
  *
  * @param { string } url
