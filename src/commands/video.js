@@ -1,4 +1,3 @@
-import { mediaFromUrl } from "../functions/mediaFromUrl.js";
 import ytSearch from "yt-search";
 import youtubedl from "youtube-dl-exec";
 
@@ -16,6 +15,7 @@ export default {
         socket.sendMessage(msg.messages[0].key.remoteJid, {
           text: "Ingresa el nombre o URL del vídeo.",
         });
+
         return;
       }
 
@@ -58,9 +58,9 @@ export default {
         return;
       }
 
-      const media = await mediaFromUrl(results[results.length - 1].url);
+      const { url, filesize_approx, format_note } = results[results.length - 1];
 
-      if (media === "limit exceeded") {
+      if (filesize_approx > 99999966.82) {
         await socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
           text: "No pude enviar el video ya que este supera el limite del peso permitido.",
         });
@@ -73,18 +73,26 @@ export default {
       }
 
       await socket.sendMessage(msg.messages[0].key.remoteJid, {
-        video: media.data,
+        document: { url },
+        fileName: video.title,
         mimetype: "video/mp4",
+        caption: `*Duración:* ${video.timestamp}\n*Tamaño:* ${parseInt(
+          filesize_approx / 1e6
+        )} MB\n*Calidad:* ${format_note || "Desconocida"}`,
       });
-
-      media.data = null;
 
       socket.sendMessage(msg.messages[0]?.key.remoteJid, {
         react: { text: "✅", key: msg.messages[0]?.key },
       });
     } catch (error) {
+      console.error(error);
+
       await socket.sendMessage(msg.messages[0].key.remoteJid, {
         text: "¡Ups! Acaba de suceder un error inesperado.",
+      });
+
+      socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
+        react: { text: "❌", key: msg.messages[0]?.key },
       });
     }
   },

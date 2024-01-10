@@ -16,7 +16,7 @@ export default {
 
       const response = await new Hercai().question({
         content: prompt,
-        model: "v3-beta",
+        model: "v3",
       });
 
       await socket.sendMessage(msg.messages[0].key.remoteJid, {
