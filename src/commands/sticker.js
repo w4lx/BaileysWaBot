@@ -1,8 +1,7 @@
-import Ffmpeg from "fluent-ffmpeg";
+import ffmpeg from "fluent-ffmpeg";
 import { downloadMediaMessage } from "@whiskeysockets/baileys";
 import { unlink } from "node:fs/promises";
 import { resolve } from "node:path";
-import { path } from "@ffmpeg-installer/ffmpeg";
 
 export default {
   name: "sticker",
@@ -19,8 +18,6 @@ export default {
 
       if (type !== "imageMessage" && type !== "videoMessage") return;
 
-      Ffmpeg.setFfmpegPath(path);
-
       socket.sendMessage(msg.messages[0]?.key.remoteJid, {
         react: { text: "⏳", key: msg.messages[0]?.key },
       });
@@ -34,8 +31,7 @@ export default {
 
       if (type === "imageMessage") {
         await new Promise((resolve) => {
-          Ffmpeg()
-            .input(src)
+          ffmpeg(src)
             .on("end", () => resolve(true))
             .addOutputOptions([
               "-vf",
@@ -48,8 +44,7 @@ export default {
         });
       } else if (type === "videoMessage") {
         await new Promise((resolve) => {
-          Ffmpeg()
-            .input(src)
+          ffmpeg(src)
             .on("end", () => resolve(true))
             .addOutputOptions([
               "-vcodec",

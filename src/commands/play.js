@@ -1,18 +1,16 @@
 // Importando las bibliotecas necesarias
-import fs from "fs"; // Biblioteca para operaciones de sistema de archivos
-import path from "path"; // Biblioteca para manejar rutas de archivos y directorios
-import yts from "yt-search"; // Biblioteca para realizar búsquedas en YouTube
-import youtubeDl from "youtube-dl-exec";
-import ffmpeg from "@ffmpeg-installer/ffmpeg";
+import fs from "fs";
+import path from "path";
+import yts from "yt-search";
+import ytdl from "ytdl-core";
+import ffmpeg from "fluent-ffmpeg";
 
-// Exportando un objeto que contiene la lógica del comando "play"
 export default {
   name: "play",
   description: "Descarga canciones de Youtube.",
   alias: ["reproduce", "p"],
   use: "!play 'nombre o url'",
 
-  // Función principal del comando
   run: async (socket, msg, args) => {
     try {
       // Obtiene el nombre de la canción de los argumentos proporcionados
@@ -21,15 +19,13 @@ export default {
       // Verifica si se proporcionó un nombre de canción
       if (!name) {
         // Si no se proporciona un nombre, envía un mensaje de error
-        socket.sendMessage(msg.messages[0]?.key.remoteJid, {
+        return socket.sendMessage(msg.messages[0]?.key.remoteJid, {
           text: "Ingresa el nombre de la canción.",
         });
-
-        return;
       }
 
       // Crea una ruta para el archivo de audio en el directorio temporal del sistema
-      const output = path.resolve("src", "temp", `SONG${Date.now()}.m4a`);
+      const output = path.resolve("src", "temp", `SONG${Date.now()}.mp3`);
 
       // Envia un mensaje de espera al usuario
       socket.sendMessage(msg.messages[0]?.key.remoteJid, {
@@ -47,11 +43,9 @@ export default {
         });
 
         // Envia una reacción de error al usuario
-        socket.sendMessage(msg.messages[0]?.key.remoteJid, {
+        return socket.sendMessage(msg.messages[0]?.key.remoteJid, {
           react: { text: "❌", key: msg.messages[0]?.key },
         });
-
-        return;
       }
 
       // Verifica si la duración del video no supera los 20 minutos (1200 segundos)
@@ -62,39 +56,41 @@ export default {
         });
 
         // Envia una reacción de error al usuario
-        socket.sendMessage(msg.messages[0]?.key.remoteJid, {
+        return socket.sendMessage(msg.messages[0]?.key.remoteJid, {
           react: { text: "❌", key: msg.messages[0]?.key },
         });
-
-        return;
       }
 
-      await youtubeDl(video.url, {
-        ffmpegLocation: ffmpeg.path,
-        format: "m4a",
-        extractAudio: true,
-        addMetadata: true,
-        output,
-      });
+      const stream = ytdl(video.url, { filter: "audioonly" });
 
-      // Envía información del video al usuario (título, autor, duración y vistas)
-      await socket.sendMessage(msg.messages[0]?.key.remoteJid, {
-        image: { url: video.image }, // URL de la imagen en miniatura del video
-        caption: `*${video.title}*\n\n*Autor:* ${video.author.name}\n*Duración:* ${video.timestamp}\n*Vistas:* ${video.views}`, // Información del video formateada
-      });
+      ffmpeg(stream)
+        .addOutputOption(
+          "-metadata",
+          `title=${video.title}}`,
+          "-metadata",
+          `artist=${video.author.name}`
+        )
+        .on("end", async () => {
+          // Envía información del video al usuario (título, autor, duración y vistas)
+          await socket.sendMessage(msg.messages[0]?.key.remoteJid, {
+            image: { url: video.image }, // URL de la imagen en miniatura del video
+            caption: `*${video.title}*\n\n*Autor:* ${video.author.name}\n*Duración:* ${video.timestamp}\n*Vistas:* ${video.views}`, // Información del video formateada
+          });
 
-      await socket.sendMessage(msg.messages[0]?.key.remoteJid, {
-        audio: { url: output }, // Contenido del audio
-        mimetype: "audio/mp4", // Tipo de archivo
-      });
+          await socket.sendMessage(msg.messages[0]?.key.remoteJid, {
+            audio: { url: output }, // Contenido del audio
+            mimetype: "audio/mpeg", // Tipo de archivo
+          });
 
-      // Envia una reacción de éxito al usuario
-      socket.sendMessage(msg.messages[0]?.key.remoteJid, {
-        react: { text: "✅", key: msg.messages[0]?.key },
-      });
+          // Elimina el archivo de audio del directorio temporal después de enviarlo
+          fs.promises.unlink(output);
 
-      // Elimina el archivo de audio del directorio temporal después de enviarlo
-      fs.promises.unlink(output);
+          // Envia una reacción de éxito al usuario
+          socket.sendMessage(msg.messages[0]?.key.remoteJid, {
+            react: { text: "✅", key: msg.messages[0]?.key },
+          });
+        })
+        .save(output);
     } catch (error) {
       // Manejo de errores: imprime el error en la consola y envía un mensaje de error al usuario
       console.error(error);

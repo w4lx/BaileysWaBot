@@ -12,11 +12,9 @@ export default {
       const query = args.join(" ");
 
       if (!query) {
-        socket.sendMessage(msg.messages[0].key.remoteJid, {
+        return socket.sendMessage(msg.messages[0].key.remoteJid, {
           text: "Ingresa el nombre o URL del vídeo.",
         });
-
-        return;
       }
 
       socket.sendMessage(msg.messages[0]?.key.remoteJid, {
@@ -30,11 +28,9 @@ export default {
           text: "Sin resultados disponibles.",
         });
 
-        socket.sendMessage(msg.messages[0]?.key.remoteJid, {
+        return socket.sendMessage(msg.messages[0]?.key.remoteJid, {
           react: { text: "❌", key: msg.messages[0]?.key },
         });
-
-        return;
       }
 
       const { formats } = await youtubedl(video.url, {

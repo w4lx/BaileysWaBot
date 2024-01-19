@@ -7,25 +7,29 @@ import { URL } from "node:url";
  * @param { string } url
  * @returns { Promise<{ data: Buffer, mimetype: string | null, size: number }> }ad
  */
-export async function mediaFromUrl(url) {
-  if (!url) return;
+export async function mediaFromUrl(source) {
+  try {
+    if (!source) return;
 
-  const pUrl = new URL(url);
+    const url = new URL(source);
 
-  const reqOptions = Object.assign({
-    headers: { accept: "image/* video/* text/* audio/*" },
-  });
+    const request = await fetch(url, {
+      headers: { accept: "image/* video/* audio/*" },
+    });
 
-  const response = await fetch(pUrl, reqOptions);
-  const size = parseInt(response.headers.get("Content-Length"));
+    const size = parseInt(request.headers.get("Content-Length"));
+    const mimetype = request.headers.get("Content-Type");
 
-  if (size > 99999966.82) return "limit exceeded";
+    if (size > 99999966.82) return "limit exceeded";
 
-  const arrayBuffer = await response.arrayBuffer();
+    const data = await request.arrayBuffer();
 
-  return {
-    data: Buffer.from(arrayBuffer, "base64"),
-    mimetype: response.headers.get("Content-Type"),
-    size,
-  };
+    return {
+      data: Buffer.from(data, "base64"),
+      mimetype,
+      size,
+    };
+  } catch (error) {
+    throw error?.message;
+  }
 }
