@@ -1,9 +1,11 @@
 // Importando las bibliotecas necesarias
 import fs from "fs";
-import path from "path";
 import yts from "yt-search";
+import path from "path";
 import ytdl from "ytdl-core";
+import nodeid3 from "node-id3";
 import ffmpeg from "fluent-ffmpeg";
+import axios from "axios";
 
 export default {
   name: "play",
@@ -48,9 +50,7 @@ export default {
         });
       }
 
-      // Verifica si la duración del video no supera los 20 minutos (1200 segundos)
       if (video.seconds > 1200) {
-        // Si el video es demasiado largo, envía un mensaje de error
         await socket.sendMessage(msg.messages[0]?.key.remoteJid, {
           text: "El vídeo no debe superar los 20 minutos.",
         });
@@ -63,34 +63,43 @@ export default {
 
       const stream = ytdl(video.url, { filter: "audioonly" });
 
-      ffmpeg(stream)
-        .addOutputOption(
-          "-metadata",
-          `title=${video.title}}`,
-          "-metadata",
-          `artist=${video.author.name}`
-        )
-        .on("end", async () => {
-          // Envía información del video al usuario (título, autor, duración y vistas)
-          await socket.sendMessage(msg.messages[0]?.key.remoteJid, {
-            image: { url: video.image }, // URL de la imagen en miniatura del video
-            caption: `*${video.title}*\n\n*Autor:* ${video.author.name}\n*Duración:* ${video.timestamp}\n*Vistas:* ${video.views}`, // Información del video formateada
-          });
+      await new Promise((resolve) => {
+        ffmpeg(stream).audioBitrate(64).on("end", resolve).save(output);
+      });
 
-          await socket.sendMessage(msg.messages[0]?.key.remoteJid, {
-            audio: { url: output }, // Contenido del audio
-            mimetype: "audio/mpeg", // Tipo de archivo
-          });
+      const { data } = await axios.get(video.image || video.thumbnail, {
+        responseType: "arraybuffer",
+      });
 
-          // Elimina el archivo de audio del directorio temporal después de enviarlo
-          fs.promises.unlink(output);
+      const tags = {
+        title: video.title,
+        artist: video.author?.name,
+        image: {
+          imageBuffer: data,
+        },
+      };
 
-          // Envia una reacción de éxito al usuario
-          socket.sendMessage(msg.messages[0]?.key.remoteJid, {
-            react: { text: "✅", key: msg.messages[0]?.key },
-          });
-        })
-        .save(output);
+      const success = nodeid3.update(tags, output);
+
+      if (success) {
+        // Envía información del video al usuario (título, autor, duración y vistas)
+        await socket.sendMessage(msg.messages[0]?.key.remoteJid, {
+          image: { url: video.image }, // URL de la imagen en miniatura del video
+          caption: `*${video.title}*\n\n*Autor:* ${video.author.name}\n*Duración:* ${video.timestamp}\n*Vistas:* ${video.views}`, // Información del video formateada
+        });
+
+        await socket.sendMessage(msg.messages[0]?.key.remoteJid, {
+          audio: { url: output }, // Contenido del audio
+          mimetype: "audio/mpeg", // Tipo de archivo
+        });
+
+        // Envia una reacción de éxito al usuario
+        socket.sendMessage(msg.messages[0]?.key.remoteJid, {
+          react: { text: "✅", key: msg.messages[0]?.key },
+        });
+
+        fs.promises.unlink(output);
+      }
     } catch (error) {
       // Manejo de errores: imprime el error en la consola y envía un mensaje de error al usuario
       console.error(error);
