@@ -1,4 +1,4 @@
-import { TiktokDL } from "@tobyg74/tiktok-api-dl";
+import { TiktokDownloader } from "@tobyg74/tiktok-api-dl";
 import { mediaFromUrl } from "../functions/mediaFromUrl.js";
 
 export default {
@@ -34,7 +34,7 @@ export default {
         react: { text: "⏳", key: msg.messages[0]?.key },
       });
 
-      const { status, result } = await TiktokDL(url, { version: "v3" });
+      const { status, result } = await TiktokDownloader(url, { version: "v3" });
 
       if (status !== "success") {
         socket.sendMessage(msg.messages[0]?.key.remoteJid, {

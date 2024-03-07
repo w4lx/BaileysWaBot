@@ -8,6 +8,10 @@
 
 ### `Redes sociales`
 
-- [Únete a nuestro Discord](https://discord.com/invite/UfYDWzW5Ej)
+- [Únete a nuestro Discord](https://discord.com/invite/MTjf2AenZm)
 - [Sígueme en Instagram](https://www.instagram.com/walx.craxker)
-- [Sígueme en TikTok](https://www.tiktok.com/@the.walrrix)
+- [Sígueme en TikTok](https://www.tiktok.com/@walt.dev)
+
+### `Mantén el bot activo 24/7`
+
+- [OptikServers](https://my.optikservers.com/join/dpyaodx5fgtWzmZ6)

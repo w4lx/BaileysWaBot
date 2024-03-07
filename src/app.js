@@ -7,7 +7,7 @@ import {
 import { createInterface } from "node:readline";
 import { resolve } from "node:path";
 import { readdir } from "node:fs/promises";
-import { keepAlive } from "./server.js";
+import { keepAlive } from "./keepAlive.js";
 import { path } from "@ffmpeg-installer/ffmpeg";
 import ffmpeg from "fluent-ffmpeg";
 import pino from "pino";

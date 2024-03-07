@@ -1,5 +1,5 @@
 import { DisconnectReason } from "@whiskeysockets/baileys";
-import { connectToWhatsApp } from "../index.js";
+import { connectToWhatsApp } from "../app.js";
 import { Boom } from "@hapi/boom";
 
 export default {
