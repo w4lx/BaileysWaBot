@@ -1,4 +1,4 @@
-import { TiktokDownloader } from "@tobyg74/tiktok-api-dl";
+import { Tiktok } from "@tobyg74/tiktok-api-dl";
 import { mediaFromUrl } from "../functions/mediaFromUrl.js";
 
 export default {
@@ -9,39 +9,35 @@ export default {
 
   run: async (socket, msg, args) => {
     try {
-      const url = args.join(" ");
+      const url = args.join("");
 
       if (!url) {
-        socket.sendMessage(msg.messages[0]?.key.remoteJid, {
+        return socket.sendMessage(msg.messages[0]?.key.remoteJid, {
           text: "Ingrese la URl del vídeo de TikTok que deseas descargar.",
         });
-
-        return;
       }
 
       const regexp =
         /^(https?:\/\/)?(www\.|vm\.)?tiktok\.com\/[@a-zA-Z0-9_.~=\/-?]+/i;
 
       if (!regexp.test(url)) {
-        socket.sendMessage(msg.messages[0]?.key.remoteJid, {
+        return socket.sendMessage(msg.messages[0]?.key.remoteJid, {
           text: "URL inválida.",
         });
-
-        return;
       }
 
       socket.sendMessage(msg.messages[0]?.key.remoteJid, {
         react: { text: "⏳", key: msg.messages[0]?.key },
       });
 
-      const { status, result } = await TiktokDownloader(url, { version: "v3" });
+      const { status, result } = await Tiktok.Downloader(url, {
+        version: "v3",
+      });
 
       if (status !== "success") {
-        socket.sendMessage(msg.messages[0]?.key.remoteJid, {
+        return socket.sendMessage(msg.messages[0]?.key.remoteJid, {
           text: "Ha ocurrido un error, vuelve a intentarlo.",
         });
-
-        return;
       }
 
       await new Promise(async (resolve, reject) => {
@@ -54,17 +50,16 @@ export default {
 
           resolve(true);
         } else if (result.type === "video") {
-          const media = await mediaFromUrl(result.video2);
+          const media = await mediaFromUrl(result.video1);
 
           if (media === "limit exceeded") {
             await socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
               text: "No pude enviar el video ya que este supera el limite del peso permitido.",
             });
 
-            socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
+            return socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
               react: { text: "❌", key: msg.messages[0]?.key },
             });
-            return;
           }
 
           await socket.sendMessage(msg.messages[0]?.key.remoteJid, {
