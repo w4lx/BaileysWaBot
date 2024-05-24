@@ -10,11 +10,9 @@ export default {
     const city = args.join(" ");
 
     if (!city) {
-      socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
+      return socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
         text: `*Escriba el nombre de pais o ciudad*`,
       });
-
-      return;
     }
 
     try {
@@ -50,7 +48,7 @@ export default {
       console.error(e);
 
       socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
-        text: `*No se han encontrado resultados, corrobore quw haya escrito correctamente su país o ciudad*`,
+        text: `*No se han encontrado resultados, corrobore que haya escrito correctamente su país o ciudad*`,
       });
     }
   },

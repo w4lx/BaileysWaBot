@@ -38,6 +38,7 @@ async function connectToWhatsApp() {
     logger: pino({ level: "silent" }),
     browser: Browsers.appropriate("chrome"),
     auth: state,
+    version: [2, 2413, 11],
   });
 
   if (!socket.authState.creds.registered) {

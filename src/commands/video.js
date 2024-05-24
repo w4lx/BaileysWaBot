@@ -39,7 +39,7 @@ export default {
 
       await socket.sendMessage(msg.messages[0].key.remoteJid, {
         document: { stream },
-        fileName: video.title,
+        fileName: video.title + ".mp4",
         mimetype: "video/mp4",
         caption: `Duración > ${video.timestamp}\nVistas > ${video.views}\nAutor > ${video.author.name}`,
       });

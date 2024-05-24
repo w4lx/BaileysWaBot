@@ -16,7 +16,7 @@
     "@hapi/boom": "^10.0.1",
     "@sasmeee/igdl": "^1.0.0",
     "@tobyg74/tiktok-api-dl": "^1.1.1",
-    "@whiskeysockets/baileys": "^6.5.0",
+    "@whiskeysockets/baileys": "^6.7.2",
     "@xaviabot/fb-downloader": "^1.0.14",
     "axios": "^1.5.1",
     "cache-manager": "^4.0.1",

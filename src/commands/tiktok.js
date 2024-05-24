@@ -1,4 +1,4 @@
-import { Tiktok } from "@tobyg74/tiktok-api-dl";
+import tiktok from "@tobyg74/tiktok-api-dl";
 import { mediaFromUrl } from "../functions/mediaFromUrl.js";
 
 export default {
@@ -30,7 +30,7 @@ export default {
         react: { text: "⏳", key: msg.messages[0]?.key },
       });
 
-      const { status, result } = await Tiktok.Downloader(url, {
+      const { status, result } = await tiktok.Downloader(url, {
         version: "v3",
       });
 
