@@ -1,0 +1,31 @@
+from flask import Flask, request
+import requests
+
+app = Flask(__name__)
+
+# Reemplaza estos valores con los datos de tu cuenta de Twilio
+ACCOUNT_SID = 'tu_account_sid'
+AUTH_TOKEN = 'tu_auth_token'
+FROM_WHATSAPP_NUMBER = 'whatsapp:+14155238886'  # Número de WhatsApp proporcionado por Twilio
+TO_WHATSAPP_NUMBER = 'whatsapp:+tu_numero'      # Tu número de WhatsApp
+
+def send_whatsapp_message(body):
+    url = f'https://api.twilio.com/2010-04-01/Accounts/{ACCOUNT_SID}/Messages.json'
+    payload = {
+        'From': FROM_WHATSAPP_NUMBER,
+        'To': TO_WHATSAPP_NUMBER,
+        'Body': body
+    }
+    response = requests.post(url, data=payload, auth=(ACCOUNT_SID, AUTH_TOKEN))
+    return response.json()
+
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    incoming_message = request.form['Body']
+    # Puedes agregar lógica para manejar diferentes mensajes aquí
+    response_message = f"Recibí tu mensaje: {incoming_message}"
+    send_whatsapp_message(response_message)
+    return "OK", 200
+
+if __name__ == '__main__':
+    app.run(port=5000)
