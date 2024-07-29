@@ -17,6 +17,7 @@ export default {
       const response = await new Hercai().question({
         content: prompt,
         model: "v3",
+        personality: "Eres un asistente útil en WhatsApp.",
       });
 
       await socket.sendMessage(msg.messages[0].key.remoteJid, {

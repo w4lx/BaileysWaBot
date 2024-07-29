@@ -14,8 +14,12 @@ export async function mediaFromUrl(source) {
     const url = new URL(source);
 
     const request = await fetch(url, {
-      headers: { accept: "image/* video/* audio/*" },
+      headers: {
+        accept: "image/* video/* audio/*",
+      },
     });
+
+    if (!request.ok) return;
 
     const size = parseInt(request.headers.get("Content-Length"));
     const mimetype = request.headers.get("Content-Type");
@@ -30,6 +34,6 @@ export async function mediaFromUrl(source) {
       size,
     };
   } catch (error) {
-    throw error?.message;
+    return error.message;
   }
 }

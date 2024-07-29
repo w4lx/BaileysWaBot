@@ -3,7 +3,7 @@ export default {
 
   async load(msg, socket) {
     try {
-      if (msg.messages[0]?.key.fromMe) return;
+      // if (msg.messages[0]?.key.fromMe) return;
       if (msg.type !== "notify") return;
 
       const content =

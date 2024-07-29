@@ -1,4 +1,4 @@
-import { mediaFromUrl } from "../functions/mediaFromUrl.js";
+import { mediaFromUrl } from "../../functions/mediaFromUrl.js";
 import facebook from "@xaviabot/fb-downloader";
 
 export default {

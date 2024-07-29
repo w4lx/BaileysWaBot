@@ -21,7 +21,7 @@ export default {
         react: { text: "⏳", key: msg.messages[0]?.key },
       });
 
-      const video = (await ytSearch(query)).all.find((i) => i.type === "video");
+      const video = (await ytSearch(query)).videos[0];
 
       if (!video) {
         await socket.sendMessage(msg.messages[0].key.remoteJid, {

@@ -1,5 +1,5 @@
 import tiktok from "@tobyg74/tiktok-api-dl";
-import { mediaFromUrl } from "../functions/mediaFromUrl.js";
+import { mediaFromUrl } from "../../functions/mediaFromUrl.js";
 
 export default {
   name: "tiktok",

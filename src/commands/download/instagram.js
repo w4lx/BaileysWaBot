@@ -1,4 +1,4 @@
-import { mediaFromUrl } from "../functions/mediaFromUrl.js";
+import { mediaFromUrl } from "../../functions/mediaFromUrl.js";
 import igdl from "@sasmeee/igdl";
 
 export default {
@@ -35,7 +35,7 @@ export default {
           });
         } else {
           await socket.sendMessage(msg.messages[0].key.remoteJid, {
-            [response.mimetype.split("/")[0] || "document"]: response.data,
+            [response.mimetype.split("/")[0]]: response.data,
           });
         }
       }
