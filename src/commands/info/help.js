@@ -1,5 +1,3 @@
-import { readFile } from "node:fs";
-
 export default {
   name: "help",
   description: "Lista de comandos o detalles de estos.",

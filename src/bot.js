@@ -1,4 +1,3 @@
-// Importa las dependencias necesarias
 import {
   makeWASocket,
   useMultiFileAuthState,
@@ -8,10 +7,12 @@ import { Collection } from "@discordjs/collection";
 import { createInterface } from "node:readline";
 import { resolve } from "node:path";
 import { readdir } from "node:fs/promises";
-import { keepAlive } from "./keepAlive.js";
 import { path } from "@ffmpeg-installer/ffmpeg";
 import ffmpeg from "fluent-ffmpeg";
 import pino from "pino";
+
+// Node.js versión >= 20
+process.loadEnvFile();
 
 ffmpeg.setFfmpegPath(path);
 
@@ -20,18 +21,16 @@ const rl = createInterface({
   output: process.stdout,
 });
 
-keepAlive();
-
 async function connectToWhatsApp() {
   const question = (txt) => new Promise((resolve) => rl.question(txt, resolve));
 
   const { state, saveCreds } = await useMultiFileAuthState("auth");
 
   const socket = makeWASocket({
+    auth: state,
+    //version: [2, 3000, 1015901307],
     logger: pino({ level: "silent" }),
     browser: Browsers.appropriate("chrome"),
-    auth: state,
-    version: [2, 2413, 11],
   });
 
   socket.commands = new Collection();
@@ -55,3 +54,7 @@ async function connectToWhatsApp() {
 connectToWhatsApp();
 
 export { connectToWhatsApp };
+
+process.on("uncaughtException", console.error);
+process.on("unhandledRejection", console.error);
+process.on("uncaughtExceptionMonitor", console.error);

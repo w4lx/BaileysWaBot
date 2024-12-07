@@ -2,34 +2,37 @@ export default {
   name: "messages.upsert",
 
   async load(msg, socket) {
+    if (msg.type !== "notify" || !msg.messages?.[0]?.message) return;
+
+    // Comenta esta línea si quieres que el bot procese también sus propios mensajes.
+    if (msg.messages[0]?.key.fromMe) return;
+
+    const { message, key } = msg.messages[0];
+
+    const content =
+      message?.extendedTextMessage?.text ||
+      message?.ephemeralMessage?.message?.extendedTextMessage?.text ||
+      message?.conversation ||
+      message?.imageMessage?.caption ||
+      message?.videoMessage?.caption;
+
+    if (!content || !content?.startsWith("!")) return;
+
     try {
-      // if (msg.messages[0]?.key.fromMe) return;
-      if (msg.type !== "notify") return;
-
-      const content =
-        msg.messages[0]?.message?.extendedTextMessage?.text ||
-        msg.messages[0]?.message?.ephemeralMessage?.message?.extendedTextMessage
-          ?.text ||
-        msg.messages[0]?.message?.conversation ||
-        msg.messages[0]?.message?.imageMessage?.caption ||
-        msg.messages[0]?.message?.videoMessage?.caption;
-
-      if (!content?.startsWith("!")) return;
-
       const args = content.slice(1).trim().split(" ");
-      const commandName = args.shift()?.toLowerCase();
-      const command = socket.commands.find(
-        (c) =>
-          c.name === commandName || (c.alias && c.alias.includes(commandName))
-      );
+      const action = args.shift().toLowerCase();
+
+      const command = socket.commands.find(({ name, alias }) => {
+        return name === action || alias?.includes(action);
+      });
 
       if (!command) return;
 
-      command.run(socket, msg, args);
+      await command.run(socket, msg, args);
     } catch (error) {
       console.error(error);
 
-      socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
+      socket.sendMessage(key.remoteJid, {
         text: "¡Ups! Algo salió mal, inténtalo de nuevo.",
       });
     }

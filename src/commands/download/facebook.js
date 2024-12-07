@@ -1,5 +1,5 @@
 import { mediaFromUrl } from "../../functions/mediaFromUrl.js";
-import facebook from "@xaviabot/fb-downloader";
+import { fbdown } from "btch-downloader";
 
 export default {
   name: "facebook",
@@ -8,35 +8,39 @@ export default {
   use: "!facebook 'url'",
 
   run: async (socket, msg, args) => {
+    if (!args.length) {
+      return socket.sendMessage(msg.messages[0].key.remoteJid, {
+        text: "Ingresa una URL de un video de facebook.",
+      });
+    }
+
     try {
-      const url = args.join(" ");
-
-      if (!url) {
-        socket.sendMessage(msg.messages[0].key.remoteJid, {
-          text: "Ingresa una URL de un video de facebook.",
-        });
-
-        return;
-      }
-
       socket.sendMessage(msg.messages[0]?.key.remoteJid, {
         react: { text: "⏳", key: msg.messages[0]?.key },
       });
 
-      const { hd, sd } = await facebook(url);
+      const { Normal_video, HD } = await fbdown(args[0]);
 
-      const video = await mediaFromUrl(hd || sd);
+      if (!Normal_video || !HD) {
+        await socket.sendMessage(msg.messages[0].key.remoteJid, {
+          text: "No hay videos disponibles.",
+        });
+
+        return socket.sendMessage(msg.messages[0]?.key.remoteJid, {
+          react: { text: "❌", key: msg.messages[0]?.key },
+        });
+      }
+
+      const video = await mediaFromUrl(HD || Normal_video);
 
       if (video === "limit exceeded") {
         await socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
           text: "No pude enviar el video ya que este supera el limite del peso permitido.",
         });
 
-        socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
+        return socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
           react: { text: "❌", key: msg.messages[0]?.key },
         });
-
-        return;
       }
 
       await socket.sendMessage(msg.messages[0]?.key.remoteJid, {
@@ -49,29 +53,9 @@ export default {
     } catch (error) {
       console.error(error);
 
-      if (error?.includes("Please enter the valid Facebook URL")) {
-        await socket.sendMessage(msg.messages[0].key.remoteJid, {
-          text: "Asegurate de que sea una URL de facebook válida.",
-        });
-
-        socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
-          react: { text: "❌", key: msg.messages[0]?.key },
-        });
-
-        return;
-      }
-
-      if (error?.includes("Unable to fetch video information")) {
-        await socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
-          text: "El video no existe o es privado.",
-        });
-
-        socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
-          react: { text: "❌", key: msg.messages[0]?.key },
-        });
-
-        return;
-      }
+      await socket.sendMessage(msg.messages[0].key.remoteJid, {
+        text: "Error desconocido.",
+      });
 
       socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
         react: { text: "❌", key: msg.messages[0]?.key },

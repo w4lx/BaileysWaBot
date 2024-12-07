@@ -11,7 +11,7 @@ export default {
       const prompt = args.join(" ") || "Hola";
 
       socket.sendMessage(msg.messages[0].key.remoteJid, {
-        react: { text: "📝", key: msg.messages[0]?.key },
+        react: { text: "🧠", key: msg.messages[0]?.key },
       });
 
       const response = await new Hercai().question({

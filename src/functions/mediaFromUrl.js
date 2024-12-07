@@ -1,30 +1,28 @@
 "use strict";
 
-import { URL } from "node:url";
-
 /**
  *
  * @param { string } url
  * @returns { Promise<{ data: Buffer, mimetype: string | null, size: number }> }ad
  */
-export async function mediaFromUrl(source) {
+export async function mediaFromUrl(url, limit = 1e8) {
+  if (!url) return;
+
   try {
-    if (!source) return;
-
-    const url = new URL(source);
-
     const request = await fetch(url, {
       headers: {
-        accept: "image/* video/* audio/*",
+        Accept: "*/*",
+        "Accept-Encoding": "gzip, deflate",
+        "User-Agent": process.env.USER_AGENT,
       },
     });
 
     if (!request.ok) return;
 
-    const size = parseInt(request.headers.get("Content-Length"));
+    const size = +request.headers.get("Content-Length");
     const mimetype = request.headers.get("Content-Type");
 
-    if (size > 99999966.82) return "limit exceeded";
+    if (size > limit) return "limit exceeded";
 
     const data = await request.arrayBuffer();
 
@@ -34,6 +32,6 @@ export async function mediaFromUrl(source) {
       size,
     };
   } catch (error) {
-    return error.message;
+    throw error.message || error;
   }
 }

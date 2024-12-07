@@ -1,5 +1,4 @@
-import tiktok from "@tobyg74/tiktok-api-dl";
-import { mediaFromUrl } from "../../functions/mediaFromUrl.js";
+import API from "@mrnima/tiktok-downloader";
 
 export default {
   name: "tiktok",
@@ -8,72 +7,39 @@ export default {
   use: "!tiktok 'url'",
 
   run: async (socket, msg, args) => {
+    if (!args.length) {
+      return socket.sendMessage(msg.messages[0].key.remoteJid, {
+        text: "Ingrese la URL del vídeo de TikTok que deseas descargar.",
+      });
+    }
+
+    if (!/(?:www|v[mt])\.tiktok\.com/.test(args[0])) {
+      return socket.sendMessage(msg.messages[0].key.remoteJid, {
+        text: "URL inválida.",
+      });
+    }
+
     try {
-      const url = args.join("");
-
-      if (!url) {
-        return socket.sendMessage(msg.messages[0]?.key.remoteJid, {
-          text: "Ingrese la URl del vídeo de TikTok que deseas descargar.",
-        });
-      }
-
-      const regexp =
-        /^(https?:\/\/)?(www\.|vm\.)?tiktok\.com\/[@a-zA-Z0-9_.~=\/-?]+/i;
-
-      if (!regexp.test(url)) {
-        return socket.sendMessage(msg.messages[0]?.key.remoteJid, {
-          text: "URL inválida.",
-        });
-      }
-
-      socket.sendMessage(msg.messages[0]?.key.remoteJid, {
+      socket.sendMessage(msg.messages[0].key.remoteJid, {
         react: { text: "⏳", key: msg.messages[0]?.key },
       });
 
-      const { status, result } = await tiktok.Downloader(url, {
-        version: "v3",
-      });
+      const response = await API.downloadTiktok(args[0]);
+      const result = response.result.dl_link;
 
-      if (status !== "success") {
-        return socket.sendMessage(msg.messages[0]?.key.remoteJid, {
-          text: "Ha ocurrido un error, vuelve a intentarlo.",
+      if (result.images?.length >= 1) {
+        for (const url of result.images) {
+          await socket.sendMessage(msg.messages[0].key.remoteJid, {
+            image: { url },
+          });
+        }
+      } else {
+        await socket.sendMessage(msg.messages[0].key.remoteJid, {
+          video: { url: result.download_mp4_1 || result.download_mp4_2 },
         });
       }
 
-      await new Promise(async (resolve, reject) => {
-        if (result.type === "image") {
-          result.images.map((img) => {
-            socket.sendMessage(msg.messages[0]?.key.remoteJid, {
-              image: { url: img },
-            });
-          });
-
-          resolve(true);
-        } else if (result.type === "video") {
-          const media = await mediaFromUrl(result.video1);
-
-          if (media === "limit exceeded") {
-            await socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
-              text: "No pude enviar el video ya que este supera el limite del peso permitido.",
-            });
-
-            return socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
-              react: { text: "❌", key: msg.messages[0]?.key },
-            });
-          }
-
-          await socket.sendMessage(msg.messages[0]?.key.remoteJid, {
-            video: media.data,
-            mimetype: "video/mp4",
-          });
-
-          media.data = null;
-
-          resolve(true);
-        }
-      });
-
-      socket.sendMessage(msg.messages[0]?.key.remoteJid, {
+      socket.sendMessage(msg.messages[0].key.remoteJid, {
         react: { text: "✅", key: msg.messages[0]?.key },
       });
     } catch (error) {

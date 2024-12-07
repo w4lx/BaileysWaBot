@@ -1,5 +1,5 @@
 import { mediaFromUrl } from "../../functions/mediaFromUrl.js";
-import igdl from "@sasmeee/igdl";
+import { igdl } from "btch-downloader";
 
 export default {
   name: "instagram",
@@ -8,24 +8,22 @@ export default {
   use: "!instagram 'url'",
 
   run: async (socket, msg, args) => {
+    const regexp = /^(https?:\/\/(www\.)?instagram\.com)/;
+
+    if (!args.length || !regexp.test(args[0])) {
+      return socket.sendMessage(msg.messages[0].key.remoteJid, {
+        text: "Ingresa una url válida de instagram.",
+      });
+    }
+
     try {
-      const url = args.join(" ");
-      const regexp = /^(https?:\/\/(www\.)?instagram\.com)/;
-
-      if (!url || !regexp.test(url)) {
-        socket.sendMessage(msg.messages[0].key.remoteJid, {
-          text: "Ingresa una url válida de instagram.",
-        });
-
-        return;
-      }
-
       socket.sendMessage(msg.messages[0]?.key?.remoteJid, {
         react: { text: "⏳", key: msg.messages[0]?.key },
       });
 
-      const request = await igdl(url);
-
+      const request = await igdl(args[0]);
+      console.log(request);
+      return;
       for (const value of request) {
         const response = await mediaFromUrl(value.download_link);
 
